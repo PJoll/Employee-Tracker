@@ -1,4 +1,4 @@
-INSERT INTO department
+INSERT INTO department_db.department
     (department_name)
 VALUES
     ('Legal'),
@@ -6,7 +6,7 @@ VALUES
     ('Sales'),
     ('Socials');
 
-INSERT INTO roles (department_id, title, salary )
+INSERT INTO department_db.roles (department_id, title, salary )
 VALUES
     (1, " Head Lawyer", 150000),
     (1, 'junior Lawyer', 100000),
@@ -18,7 +18,7 @@ VALUES
     (4, 'Socials team member', 60000);
 
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
+INSERT INTO department_db.employee (first_name, last_name, role_id, manager_id)
 VALUES
     ('John', 'Deer', 1, 10),
     ('Chantelle', 'Hampton', 2, 5),
