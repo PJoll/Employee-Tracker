@@ -19,8 +19,7 @@ app.use(express.json());
 // connect to database
 
 //connect using mysql2
-function connect()
-{
+function connect() {
     var connection = mysql2.createConnection({
         host: "localhost",
         port: 3306,
@@ -36,7 +35,7 @@ function connect()
 
 // const sequelize = new Sequelize(
 //     process.env.DATABASE,
-    
+
 //     process.env.MYPASSWORD,
 // );
 
@@ -60,24 +59,24 @@ function getTask() {
                 ]
 
             })
-                .then(function (result) {
-                    console.log("result of inquirer",result);
-                    switch (result.jobs) {
-                        case "view":
-                            view();
-                            break;
-                        case "add":
-                            add();
-                            break;
-                        case "Update":
-                            update();
-                            break;
-                        case "Leave":
-                            leave();
-                            return    
+        .then(function (result) {
+            console.log("result of inquirer", result);
+            switch (result.jobs) {
+                case "view":
+                    view();
+                    break;
+                case "add":
+                    add();
+                    break;
+                case "Update":
+                    update();
+                    break;
+                case "Leave":
+                    leave();
+                    return
 
-                    }
-                })
+            }
+        })
 }
 
 
@@ -104,21 +103,20 @@ function view() {
         ).then((result) => {
             var connection = connect();
             var query = "";
-            switch (result.viewOptions)
-            {
+            switch (result.viewOptions) {
                 case 'department':
                     query = "SELECT * FROM department_db.department ";
                     break;
-                    case 'roles':
-                        query = "SELECT * FROM department_db.roles; ";
-                        break;
-                    case 'employee':
-                        query = "Select concat(e.first_name, ' ', e.last_name) as employees, r.title, r.salary from employee e inner join roles as r on e.role_id = r.id";
-                        break;
+                case 'roles':
+                    query = "SELECT * FROM department_db.roles; ";
+                    break;
+                case 'employee':
+                    query = "Select concat(e.first_name, ' ', e.last_name) as employees, r.title, r.salary from employee e inner join roles as r on e.role_id = r.id";
+                    break;
             }
             // some how get from sql and deal with errors
-            connection.connect((r) =>{
-                
+            connection.connect((r) => {
+
                 if (r) throw r;
                 console.log("connected as id " + connection.threadId);
                 connection.query(query, (err, result) => {
@@ -129,8 +127,8 @@ function view() {
                     getTask();
 
                 })
-            } )
-            
+            })
+
 
         })
 }
@@ -151,21 +149,20 @@ function add() {
         ).then((result) => {
             var connection = connect();
             var query = "";
-            switch (result.add)
-            {
+            switch (result.add) {
                 case 'department':
                     addDepartment()
                     break;
-                    case 'roles':
-                        addRole()
-                        break;
-                    case 'employee':
-                        addEmployee()
-                        break;
+                case 'roles':
+                    addRole()
+                    break;
+                case 'employee':
+                    addEmployee()
+                    break;
             }
             // some how get from sql and deal with errors
-            connection.connect((r) =>{
-                
+            connection.connect((r) => {
+
                 if (r) throw r;
                 console.log("connected as id " + connection.threadId);
                 connection.query(query, (err, result) => {
@@ -174,66 +171,93 @@ function add() {
                     console.table(result)
                     connection.end();
                     getTask();
-                })})})
+                })
+            })
+        })
 
 }
- function addDepartment() {
-     const connection = connect()
-     inquirer
-     .prompt(
-         {
+function addDepartment() {
+    const connection = this.connection
+    inquirer
+        .prompt(
+            {
+                type: "input",
+                name: "department",
+                message: "What is the name of the department?"
+            }
+
+        ).then((answer) => {
+            console.log(answer)
+            connection.connect(function (err) {
+                if (err) throw err;
+                connection.query("INSERT INTO demartment (name) VALUES ('${department}')", answer.department, function (err, res) {
+                    if (err) throw err;
+                    connection.end()
+                    console.table(res);
+                    getTask()
+                })
+            })
+        })
+}
+function addRole() {
+    const connection = this.connection
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "role",
+                message: "Add a role",
+            },
+            {
+                type: "input",
+                name: "salary",
+                message: "Add a Salary for the new role",
+            },
+        {
             type: "input",
-            name: "department",
-            message: "What is the name of the department?"
-         }
-     ).then((answer)=> {
-         connection.connect(function(err){
-             if (err) throw err;
-             connection.query("INSERT INTO demartment (name) VALUES (?)", answer.department, function (err,res){
-                 if (err ) throw err;
-                 connection.end()
-             })
-         })
-     })
- }
+            name: 'department',
+            message: "Add a department for the new Role",
+        }]) 
 
- function addRole() {}
+        
+}getTask();
 
- function addEmployee() {}
+function addEmployee() { }
 
 
 
- function update () {
-     inquirer 
-     .prompt(
-         {
-            type: "list",
-            name: "update",
-            message: "what would you like to update?",
-            choices: [
-                "role"
-            ]
-         }
-     ).then (function ({update}){
-         switch(update) {
-             case "role":
-                 updateRole();
-                 break;
-         } 
-     })
- }
+function update() {
+    inquirer
+        .prompt(
+            {
+                type: "list",
+                name: "update",
+                message: "what would you like to update?",
+                choices: [
+                    "role"
+                ]
+            }
+        ).then(function ({ update }) {
+            switch (update) {
+                case "role":
+                    updateRole();
+                    break;
+            }
+        }) 
+        getTask();
+}
 
 
 
 
- function updateRole() {
+function updateRole() {
 
     getTask();
- }
+}
 
 
 
 
- function leave () {}
+function leave() { }
 
- getTask();
+getTask();
