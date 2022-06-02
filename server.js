@@ -201,7 +201,7 @@ async function add(tableSelection) {
 
             }
         ])
-            console.log("this is your role result", result)
+         
             query = `insert into department_db.employee (first_name, last_name, role_id, manager_id)) values (${result.first_name}, ${result.last_name}, ${result.role_id},${result.manager_id})`
             executeQuery(query)
             getTask()

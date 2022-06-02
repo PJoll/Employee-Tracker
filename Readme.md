@@ -18,10 +18,7 @@ The goal of the project is to create an application that organizes a business us
 -Adding to Tables using mysql
 
 ## Usage 
-The following link is the completed active website.
-https://limitless-plains-83718.herokuapp.com/
-
-The following image shows the completed result.
+The following link is the video.
+https://drive.google.com/file/d/14QjpE8rk0Y7opzjDwx1ETMUHh3CXxdav/view?usp=sharing
 
 
-![alt text](./public/assets/Note%20Taker%20-.png)
