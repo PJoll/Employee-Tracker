@@ -33,16 +33,10 @@ function connect() {
 
 
 
-// const sequelize = new Sequelize(
-//     process.env.DATABASE,
-
-//     process.env.MYPASSWORD,
-// );
 
 
 function getTask() {
 
-    console.log("env data", process.env.DB_PASSWORD, process.env.DB_USER)
     inquirer
         .prompt(
             {
@@ -60,20 +54,29 @@ function getTask() {
 
             })
         .then(function (result) {
-            console.log("result of inquirer", result);
+
             switch (result.jobs) {
                 case "view":
                     view();
                     break;
-                case "add":
-                    add();
+                case "Add a Role":
+                    add("roles");
                     break;
+                case "Add a Department":
+                    add("departments")
+                    break
+                case "Add an Employee":
+                    add("employees")
+                    break
                 case "Update":
                     update();
                     break;
-                case "Leave":
-                    leave();
+                case "Leave without making a choice":
                     return
+                    break
+                default:
+                    console.log("error in selection process")
+                    break
 
             }
         })
@@ -133,131 +136,61 @@ function view() {
         })
 }
 
-function add() {
-    inquirer
-        .prompt(
-            {
-                type: 'list',
-                name: "add",
-                message: 'Which would you like to add?',
-                choices: [
-                    "departments",
-                    "roles",
-                    "employees"
-                ],
-            }
-        ).then((result) => {
-            var connection = connect();
-            var query = "";
-            switch (result.add) {
-                case 'department':
-                    addDepartment()
-                    break;
-                case 'roles':
-                    addRole()
-                    break;
-                case 'employee':
-                    addEmployee()
-                    break;
-            }
-            // some how get from sql and deal with errors
-            connection.connect((r) => {
+async function add(tableSelection) {
+    var query = "";
 
-                if (r) throw r;
-                console.log("connected as id " + connection.threadId);
-                connection.query(query, (err, result) => {
-                    if (err) throw err;
-                    console.log("result: ", result)
-                    console.table(result)
-                    connection.end();
-                    getTask();
-                })
-            })
-        })
-
-}
-function addDepartment() {
-    const connection = this.connection
-    inquirer
-        .prompt(
-            {
+    switch (tableSelection) {
+        case "roles":
+            result = await inquirer.prompt([{
                 type: "input",
-                name: "department",
-                message: "What is the name of the department?"
-            }
-
-        ).then((answer) => {
-            console.log(answer)
-            connection.connect(function (err) {
-                if (err) throw err;
-                connection.query("INSERT INTO demartment (name) VALUES ('${department}')", answer.department, function (err, res) {
-                    if (err) throw err;
-                    connection.end()
-                    console.table(res);
-                    getTask()
-                })
-            })
-        })
-}
-function addRole() {
-    const connection = this.connection
-    inquirer
-        .prompt([
-            {
-                type: "input",
-                name: "role",
-                message: "Add a role",
+                name: "title",
+                message: "Please enter a title for the role",
             },
             {
                 type: "input",
                 name: "salary",
-                message: "Add a Salary for the new role",
+                message: "Please enter a salary for the role",
             },
-        {
-            type: "input",
-            name: 'department',
-            message: "Add a department for the new Role",
-        }]) 
-
-        
-}getTask();
-
-function addEmployee() { }
-
-
-
-function update() {
-    inquirer
-        .prompt(
             {
-                type: "list",
-                name: "update",
-                message: "what would you like to update?",
-                choices: [
-                    "role"
-                ]
-            }
-        ).then(function ({ update }) {
-            switch (update) {
-                case "role":
-                    updateRole();
-                    break;
-            }
-        }) 
-        getTask();
+                type: "input",
+                name: "department_id",
+                message: "Please enter a department_id for the role",
+
+            }])
+            console.log("this is your role result", result)
+            query = `insert into roles (department_id, salary, title) values (${result.department_id}, ${result.salary}, '${result.title}')`
+            executeQuery(query)
+            getTask()
+
+
+
+            break
+        case "departments":
+            query = ""
+            break
+        case "employees":
+            query = ""
+            break
+    }
 }
 
+function executeQuery(query) {
+    var connection = connect();
+    connection.connect((r) => {
 
-
-
-function updateRole() {
-
-    getTask();
+        if (r) throw r;
+        console.log("connected as id " + connection.threadId);
+        connection.query(query, (err, result) => {
+            if (err) {
+                console.log("Error", err)
+                throw err
+            };
+            if (result.affectedRows > 0) 
+            {
+                console.log("sucessfully updated table")
+            }
+            connection.end();
+        })
+    })
 }
-
-
-
-
-function leave() { }
-
 getTask();
