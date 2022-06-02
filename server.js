@@ -117,7 +117,7 @@ function view() {
                     query = "Select concat(e.first_name, ' ', e.last_name) as employees, r.title, r.salary from employee e inner join roles as r on e.role_id = r.id";
                     break;
             }
-            // some how get from sql and deal with errors
+            
             connection.connect((r) => {
 
                 if (r) throw r;
@@ -166,10 +166,45 @@ async function add(tableSelection) {
 
             break
         case "departments":
-            query = ""
+            result = await inquirer.prompt([{
+                type: "input",
+                name: "name",
+                message: "Please enter a name for the department",
+            },
+            ])
+            console.log("this is your department result", result)
+            query = `insert into department (department_name) values ('${result.department_name}',)`
+            executeQuery(query)
+            getTask()
             break
         case "employees":
-            query = ""
+            result = await inquirer.prompt([{
+                type: "input",
+                name: "first_name",
+                message: "Please enter a first name",
+            },
+            {
+                type: "input",
+                name: "last_name",
+                message: "Please enter a last name",
+            },
+            {
+                type: "input",
+                name: "role_id",
+                message: "Please enter a role_id ",
+
+            },
+            {
+                type: "input",
+                name: "manager_id",
+                message: "Please enter a manager_id ",
+
+            }
+        ])
+            console.log("this is your role result", result)
+            query = `insert into department_db.employee (first_name, last_name, role_id, manager_id)) values (${result.first_name}, ${result.last_name}, ${result.role_id},${result.manager_id})`
+            executeQuery(query)
+            getTask()
             break
     }
 }
